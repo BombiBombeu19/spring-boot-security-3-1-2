@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user.firstName} + ' ' + ${user.lastName}">User Page</title></head>
+<body>
+<h1>Welcome spring boot security page!</h1>
+<br/>
+<p th:text="'ID: ' + ${user.id}">Id</p>
+<p th:text="'Name: ' + ${user.firstName}">Name</p>
+<p th:text="'Last name: ' + ${user.lastName}">Last name</p>
+<p th:text="'Age: ' + ${user.age}">Age</p>
+<p th:text="'Email: ' + ${user.email}">Email</p>
+
+<form th:action="@{/logout}" th:method="POST">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <input type="submit" value="Logout" style="color: red"/>
+</form>
+
+</body>
+</html>
