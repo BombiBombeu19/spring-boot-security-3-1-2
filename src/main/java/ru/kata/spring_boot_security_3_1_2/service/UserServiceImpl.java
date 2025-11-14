@@ -15,6 +15,7 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -50,20 +51,34 @@ public class UserServiceImpl implements UserService {
     public void addUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Role userRole = roleRepository.findByAuthority("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
+        Set<Role> roles = user.getRoles().stream()
+                .map(role -> roleRepository.findById(role.getId())
+                        .orElseThrow(() -> new RuntimeException("Role not found: "
+                                + role.getId())))
+                .collect(Collectors.toSet());
 
-        user.setRoles(Set.of(userRole));
+        user.setRoles(roles);
 
         userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public void updateUser(int id, String password, User updatedUser) {
-        updatedUser.setId(id);
-        updatedUser.setPassword(password);
-        userRepository.save(updatedUser);
+    public void updateUser(int id, User updatedUser) {
+        User user = userRepository.getById(id);
+
+        user.setFirstName(updatedUser.getFirstName());
+        user.setLastName(updatedUser.getLastName());
+        user.setAge(updatedUser.getAge());
+        user.setEmail(updatedUser.getEmail());
+        user.setRoles(updatedUser.getRoles());
+
+        if (!(updatedUser.getPassword() == null
+                || updatedUser.getPassword().isBlank())) {
+            user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        userRepository.save(user);
     }
 
     @Override

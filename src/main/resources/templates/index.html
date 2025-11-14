@@ -2,21 +2,32 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome</title>
+    <title>login</title>
 </head>
 <body>
 
-<div class="container">
-    <h1>Welcome to Index Page!</h1>
+<h1>Please sign in</h1>
 
-    <form th:action="@{/auth/login}" th:method="GET">
-        <input type="submit" class="btn" value="Login"/>
-    </form>
+<form name="f" method="post" action="/process_login">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
-    <form th:action="@{/auth/registration}" th:method="GET">
-        <input type="submit" class="btn" value="Registration"/>
-    </form>
-</div>
+    <label for="email">Введите почту: </label>
+    <input type="text" name="email" id="email"/>
+    <br/>
+    <br/>
+
+    <label for="password">Введите пароль: </label>
+    <input type="password" name="password" id="password"/>
+    <br/>
+    <br/>
+
+    <input type="submit" value="Sign in" style="background-color: blue; color: white"/>
+
+    <div th:if="${param.error}" style="color: red">
+        Неправильные почта или пароль
+    </div>
+</form>
+
 
 </body>
 </html>

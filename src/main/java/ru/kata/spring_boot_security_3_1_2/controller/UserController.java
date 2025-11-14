@@ -47,25 +47,21 @@ public class UserController {
         return "user/user";
     }
 
-    @GetMapping("/auth/login")
-    public String loginPage() {
-        return "auth/login";
-    }
-
-    @GetMapping("/auth/registration")
-    public String registrationPage(Model model) {
+    @GetMapping("/admin/adminAdd")
+    public String adminAddPage(Model model) {
         model.addAttribute("user", new User());
-        return "auth/registration";
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/adminAdd";
     }
 
-    @PostMapping("/auth/registration")
-    public String performRegistration(@ModelAttribute("user") @Valid User user
+    @PostMapping("/admin/adminAdd")
+    public String performAdminAdd(@ModelAttribute("user") @Valid User user
             , BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "auth/registration";
+            return "admin/adminAdd";
         }
         userService.addUser(user);
-        return "redirect:/auth/login";
+        return "redirect:/admin/admin";
     }
 
     @GetMapping("/admin/adminUpdate")
@@ -82,12 +78,19 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return "admin/adminUpdate";
         }
-        userService.updateUser(id, userService.showUser(id).getPassword(), user);
+        userService.updateUser(id, user);
         return "redirect:/admin/admin";
     }
 
-    @PostMapping("/admin/delete")
-    public String delete(@RequestParam int id) {
+    @GetMapping("/admin/adminDelete")
+    public String adminDeletePage(@RequestParam int id, Model model) {
+        model.addAttribute("user", userService.showUser(id));
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/adminDelete";
+    }
+
+    @PostMapping("/admin/adminDelete")
+    public String performAdminDelete(@RequestParam int id) {
         userService.deleteUser(id);
         return "redirect:/admin/admin";
     }
