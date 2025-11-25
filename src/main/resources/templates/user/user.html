@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user.firstName} + ' ' + ${user.lastName}">User Page</title></head>
+<body>
+<h1>User information-page</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Age</th>
+        <th>Email</th>
+        <th>Role</th>
+    </tr>
+    </thead>
+    <tbody>
+    <td th:text="${user.id}"></td>
+    <td th:text="${user.firstName}"></td>
+    <td th:text="${user.lastName}"></td>
+    <td th:text="${user.age}"></td>
+    <td th:text="${user.email}"></td>
+    <td>
+        <span th:each="role : ${user.roles}" th:text="${role.authority}" style="display: block">ROLE_USER</span>
+    </td>
+    </tbody>
+</table>
+<br/>
+
+<form th:action="@{/logout}" th:method="POST">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <input type="submit" value="Logout" style="color: red"/>
+</form>
+
+</body>
+</html>

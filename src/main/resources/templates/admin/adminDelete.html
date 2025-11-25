@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete user</title>
+</head>
+<body>
+<h1>Delete user</h1>
+
+<form th:method="POST" th:action="@{/admin/adminDelete}" th:object="${user}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <input type="hidden" name="id" th:value="${user.id}"/>
+
+    <label>Id: </label><br/>
+    <input type="text" th:field="*{id}" id="id" readonly/>
+    <div style="color:red" th:if="${#fields.hasErrors('id')}"
+         th:errors="*{id}">ошибка
+    </div>
+    <br/>
+    <br/>
+
+
+    <label>First name: </label><br/>
+    <input type="text" th:field="*{firstName}" id="name" readonly/>
+    <div style="color:red" th:if="${#fields.hasErrors('firstName')}"
+         th:errors="*{firstName}">ошибка
+    </div>
+    <br/>
+    <br/>
+
+    <label>Last name: </label><br/>
+    <input type="text" th:field="*{lastName}" id="lastName" readonly/>
+    <div style="color:red" th:if="${#fields.hasErrors('lastName')}"
+         th:errors="*{lastName}">ошибка
+    </div>
+    <br/>
+    <br/>
+
+    <label>Age: </label><br/>
+    <input type="text" th:field="*{age}" id="age" readonly/>
+    <div style="color:red" th:if="${#fields.hasErrors('age')}"
+         th:errors="*{age}">ошибка
+    </div>
+    <br/>
+    <br/>
+
+    <label>Email: </label><br/>
+    <input type="text" th:field="*{email}" id="email" readonly/>
+    <div style="color:red" th:if="${#fields.hasErrors('email')}"
+         th:errors="*{email}">ошибка
+    </div>
+    <br/>
+    <br/>
+
+
+    <label>Role: </label><br/>
+    <label>
+        <li th:each="role : ${user.roles}"
+            th:text="${role.authority}"></li>
+    </label>
+    <br/>
+
+    <input type="submit" value="Delete" style="background-color: red; color: white"/>
+</form>
+<br/>
+
+<form th:action="@{/admin/admin}" th:method="GET">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <input type="submit" value="Close" style="background-color: dimgrey; color: white"/>
+</form>
+
+</body>
+</html>

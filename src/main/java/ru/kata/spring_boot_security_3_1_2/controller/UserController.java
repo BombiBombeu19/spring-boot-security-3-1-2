@@ -1,6 +1,7 @@
 package ru.kata.spring_boot_security_3_1_2.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,67 +11,87 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.kata.spring_boot_security_3_1_2.model.User;
+import ru.kata.spring_boot_security_3_1_2.repository.RoleRepository;
 import ru.kata.spring_boot_security_3_1_2.service.UserService;
 
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping()
 public class UserController {
 
     private final UserService userService;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserService userServiceImpl
+            , RoleRepository roleRepository) {
+        this.userService = userServiceImpl;
+        this.roleRepository = roleRepository;
     }
 
-    @GetMapping()
-    public String showUsers(Model model) {
+    @GetMapping({"/", "/index"})
+    public String indexPage() {
+        return "index";
+    }
+
+    @GetMapping({"/admin/admin"})
+    public String adminPage(Model model) {
         model.addAttribute("users", userService.listUsers());
-        return "users";
+        return "admin/admin";
     }
 
-    @GetMapping("/show")
-    public String show(@RequestParam int id, Model model) {
-        model.addAttribute("user", userService.showUser(id));
-        return "show";
+    @GetMapping("/user/user")
+    public String userPage(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("user", user);
+        return "user/user";
     }
 
-    @GetMapping("/add")
-    public String add(Model model) {
+    @GetMapping("/admin/adminAdd")
+    public String adminAddPage(Model model) {
         model.addAttribute("user", new User());
-        return "add";
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/adminAdd";
     }
 
-    @PostMapping("/create")
-    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+    @PostMapping("/admin/adminAdd")
+    public String performAdminAdd(@ModelAttribute("user") @Valid User user
+            , BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "add";
+            return "admin/adminAdd";
         }
         userService.addUser(user);
-        return "redirect:/users";
+        return "redirect:/admin/admin";
     }
 
-    @GetMapping("/edit")
-    public String edit(@RequestParam int id, Model model) {
+    @GetMapping("/admin/adminUpdate")
+    public String adminUpdatePage(@RequestParam int id, Model model) {
         model.addAttribute("user", userService.showUser(id));
-        return "edit";
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/adminUpdate";
     }
 
-    @PostMapping("/update")
-    public String update(@ModelAttribute("user") @Valid User user,
-                         BindingResult bindingResult, @RequestParam int id) {
+    @PostMapping("/admin/adminUpdate")
+    public String performAdminUpdate(@ModelAttribute("user") @Valid User user
+            , BindingResult bindingResult
+            , @RequestParam int id) {
         if (bindingResult.hasErrors()) {
-            return "edit";
+            return "admin/adminUpdate";
         }
         userService.updateUser(id, user);
-        return "redirect:/users";
+        return "redirect:/admin/admin";
     }
 
-    @PostMapping("/delete")
-    public String delete(@RequestParam int id) {
+    @GetMapping("/admin/adminDelete")
+    public String adminDeletePage(@RequestParam int id, Model model) {
+        model.addAttribute("user", userService.showUser(id));
+        model.addAttribute("roles", roleRepository.findAll());
+        return "admin/adminDelete";
+    }
+
+    @PostMapping("/admin/adminDelete")
+    public String performAdminDelete(@RequestParam int id) {
         userService.deleteUser(id);
-        return "redirect:/users";
+        return "redirect:/admin/admin";
     }
 }
